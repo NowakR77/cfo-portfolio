@@ -32,63 +32,44 @@ def render_sidebar() -> str:
 
 def render_home() -> None:
     """Display the home page content."""
-    st.title("CFO & Builder")
-    st.caption("Finance leader shaping data-driven operating systems.")
+    col1, col2 = st.columns([1, 2])
 
-    st.markdown(
-        """
-        <style>
-            .about-card {
-                background-color: #f9fafc;
-                padding: 2rem;
-                border-radius: 12px;
-                box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
-            }
-            .photo-placeholder {
-                width: 200px;
-                height: 240px;
-                border-radius: 16px;
-                border: 2px dashed #94a3b8;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: 600;
-                color: #475569;
-                background: #fff;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    col_photo, col_about = st.columns([1, 2])
-
-    with col_photo:
-        st.markdown(
-            """
-            <div class="photo-placeholder">
-                Photo Placeholder
-            </div>
-            """,
-            unsafe_allow_html=True,
+    with col1:
+        st.image(
+            "profile.jpg",
+            width=200,
         )
 
-    with col_about:
-        st.markdown(
+    with col2:
+        st.title("Robert Nowak")
+        st.subheader("CFO & Builder | Finance x AI")
+        st.write(
             """
-            <div class="about-card">
-                <h3>About Me</h3>
-                <p>
-                    I architect finance organizations that operate like product teams—tight
-                    feedback loops, intelligent automation, and relentless focus on strategic
-                    allocation. With experience across corporate finance, SaaS GTM analytics,
-                    and venture-backed scale-ups, I pair CFO rigor with a builder's mindset to
-                    design resilient systems that unlock growth.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
+            **Bridging the gap between traditional Finance leadership and modern AI automation.**
+
+            I am a Finance Executive based in Prosper, Texas, focused on building scalable financial operations.
+            Unlike traditional CFOs, I believe in "walking the walk"—building my own tools, automating workflows,
+            and leveraging AI to drive business insights.
+            """
         )
+        st.markdown(
+            "[Connect on LinkedIn](https://www.linkedin.com) | [Email Me](mailto:your-email@example.com)"
+        )
+
+    st.divider()
+
+    st.subheader("🚀 What I Build")
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.info("**AI Agents**\nAutomated research and analysis tools using LLMs.")
+    with c2:
+        st.success("**SaaS Metrics**\nDashboards for ARR, NRR, and Rule of 40.")
+    with c3:
+        st.warning("**Workflows**\nProcess automation using n8n and Python.")
+
+    st.write("---")
+    st.caption("📍 Currently building in Python, Streamlit, and n8n.")
 
 
 def render_ai_analyst() -> None:
