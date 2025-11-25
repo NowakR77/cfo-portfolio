@@ -1,6 +1,8 @@
 import requests
 import streamlit as st
 from streamlit_option_menu import option_menu
+import yfinance as yf
+import plotly.graph_objects as go
 
 
 st.set_page_config(
@@ -16,8 +18,8 @@ def render_sidebar() -> str:
     with st.sidebar:
         selected = option_menu(
             "Main Menu",
-            ["Home", "AI Analyst", "SaaS Metrics"],
-            icons=["house", "robot", "calculator"],
+            ["Home", "AI Analyst", "SaaS Metrics", "Market Data"],
+            icons=["house", "robot", "calculator", "graph-up-arrow"],
             menu_icon="cast",
             default_index=0,
         )
@@ -101,6 +103,50 @@ def render_ai_analyst() -> None:
                 st.error("Received an unexpected response from the research agent.")
 
 
+def render_market_data() -> None:
+    """Display the Market Intelligence dashboard with stock data."""
+    st.title("Market Intelligence")
+    
+    symbol = st.text_input("Ticker Symbol", value="MSFT")
+    
+    if symbol:
+        try:
+            with st.spinner(f"Fetching data for {symbol}..."):
+                ticker = yf.Ticker(symbol)
+                hist = ticker.history(period="6mo")
+                
+                if hist.empty:
+                    st.error(f"No data found for ticker symbol: {symbol}")
+                    return
+                
+                # Create candlestick chart
+                fig = go.Figure(
+                    data=[
+                        go.Candlestick(
+                            x=hist.index,
+                            open=hist["Open"],
+                            high=hist["High"],
+                            low=hist["Low"],
+                            close=hist["Close"],
+                        )
+                    ]
+                )
+                
+                fig.update_layout(
+                    title=f"{symbol} - 6 Month Stock Price",
+                    xaxis_title="Date",
+                    yaxis_title="Price ($)",
+                    height=600,
+                    xaxis_rangeslider_visible=False,
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+                
+        except Exception as e:
+            st.error(f"Error fetching data for {symbol}: {str(e)}")
+            st.info("Please check that the ticker symbol is valid and try again.")
+
+
 def main() -> None:
     """Entrypoint for the Streamlit app."""
     selected = render_sidebar()
@@ -108,8 +154,7 @@ def main() -> None:
         render_home()
     elif selected == "AI Analyst":
         render_ai_analyst()
-
-    if selected == "SaaS Metrics":
+    elif selected == "SaaS Metrics":
         st.title("SaaS Efficiency Estimator")
         st.write(
             "Calculate the **Rule of 40** and valuation impact based on standard SaaS metrics."
@@ -154,6 +199,8 @@ def main() -> None:
         st.caption(
             "Strategic Context: Investors typically reward companies above the 40% line with higher revenue multiples."
         )
+    elif selected == "Market Data":
+        render_market_data()
 
 
 if __name__ == "__main__":
