@@ -1,0 +1,7 @@
+streamlit>=1.27.0
+requests
+yfinance
+plotly
+pandas
+pandas_ta
+google-generativeai
