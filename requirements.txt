@@ -3,5 +3,4 @@ requests
 yfinance
 plotly
 pandas
-pandas_ta
 google-generativeai

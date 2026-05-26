@@ -1,7 +1,6 @@
 import streamlit as st
 import yfinance as yf
 import pandas as pd
-import pandas_ta as ta
 import plotly.graph_objects as go
 import requests
 
@@ -37,10 +36,25 @@ if ticker:
                 st.stop()
 
             # 3. The Math Engine (Now with RSI & Volume)
-            # Calculate ATR (Volatility)
-            df.ta.atr(length=14, append=True)
-            # Calculate RSI (Momentum)
-            df.ta.rsi(length=14, append=True)
+            # Calculate ATR (Volatility) — Wilder's smoothing, same as pandas_ta
+            high, low, close = df['High'], df['Low'], df['Close']
+            prev_close = close.shift(1)
+            tr = pd.concat([
+                high - low,
+                (high - prev_close).abs(),
+                (low - prev_close).abs()
+            ], axis=1).max(axis=1)
+            df['ATRr_14'] = tr.ewm(com=13, adjust=False, min_periods=14).mean()
+
+            # Calculate RSI (Momentum) — Wilder's smoothing, same as pandas_ta
+            delta = close.diff()
+            gain = delta.clip(lower=0)
+            loss = (-delta).clip(lower=0)
+            avg_gain = gain.ewm(com=13, adjust=False, min_periods=14).mean()
+            avg_loss = loss.ewm(com=13, adjust=False, min_periods=14).mean()
+            rs = avg_gain / avg_loss
+            df['RSI_14'] = 100 - (100 / (1 + rs))
+
             # Calculate Volume SMA (Average Volume over 20 days)
             vol_sma = df['Volume'].rolling(window=20).mean()
             
